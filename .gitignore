@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# removing all txt files atm cause my journal entries don't have a place to live yet
+*.txt
+
 # User-specific files
 *.rsuser
 *.suo
