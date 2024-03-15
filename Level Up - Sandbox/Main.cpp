@@ -7,15 +7,18 @@
 #include <chrono>
 #include <fstream>
 #include <limits>
+#include <filesystem>
 
 
 using namespace std;
 
 const map<int, string> functions{
+	{0, "Exit"},
 	{1, "Show today's date."},
 	{2, "Create journal entry."},
 	{3, "View journal."},
-	{4, "Delete journal."}
+	{4, "Delete journal."},
+	//Other functions to consider: Set path for journals, encrypt journals, ...
 };
 
 void ltrim(string& s) {
@@ -131,6 +134,46 @@ void createJournal() {
 
 }
 
+void viewJournal() {
+	filesystem::path cw_dir = filesystem::current_path();
+
+	cout << endl;
+
+	int i = 1;
+	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
+		if (entry.path().extension() == ".txt") {
+			cout << i << " - " << entry.path().filename() << endl;
+			i++;
+		}
+	}
+
+	int selection;
+	cout << endl << "Which journal would you like to view? (Enter the integer value)" << endl << endl;
+	cin >> selection;
+
+	i = 1;
+	filesystem::path filePath;
+	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
+		if (entry.path().extension() == ".txt") {
+			if (i == selection) {
+				filePath = entry.path();
+				break;
+			}
+			i++;
+		}
+	}
+
+	if (filePath.empty()) {
+		cout << "File not found. (Please enter a valid integer value)" << endl;
+		return;
+	}
+
+	string cmd = "notepad " + filePath.string();
+
+	system(cmd.c_str());
+
+}
+
 void selectFunction(int selection) {
 	switch (selection) {
 		case 1:
@@ -139,8 +182,11 @@ void selectFunction(int selection) {
 		case 2:
 			createJournal();
 			break;
+		case 3:
+			viewJournal();
+			break;
 		default:
-			cout << "Invalid function designator.";
+			cout << "Invalid function designator or not yet implemented.";
 			break;
 	}
 }
@@ -149,26 +195,27 @@ int main()
 {
 	vector<string> acceptableGreetings = { "hi", "hello", "hey" };
 	string greeting;
-	int pickedFunction;
+	int pickedFunction = -1;
 
-	cout << "Hello,\n\nWelcome to Project Level Up - Sandbox.\n";
+	cout << "Hello,\n\nWelcome to Project Level Up - Sandbox." << endl;
 	cin >> greeting;
 	greeting = toLowercase(greeting);
 
 	if (isStringInArray(greeting, acceptableGreetings))
-		cout << "\nWelcome Entity <3\n";
+		cout << "\nWelcome Entity <3" << endl;
 	else
 		return 0;
 
-	cout << "\nWhich function would you like to perform?\n\n";
-	printFunctions();
-	cin >> pickedFunction;
+	while (pickedFunction != 0) {
+		cout << endl << "Which function would you like to perform? (Enter the corresponding integer value)" << endl << endl;
+		printFunctions();
+		cin >> pickedFunction;
 
-	if (pickedFunction == 0) {
-		cout << "Please provide a valid value. (Integer greater than 0)";
-		return 0;
+		if (pickedFunction < 0 || pickedFunction > 4) {
+			cout << "Please provide a valid integer value.";
+		}
+
+		selectFunction(pickedFunction);
 	}
 
-	selectFunction(pickedFunction);
-	
 }
