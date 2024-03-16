@@ -9,10 +9,21 @@
 #include <limits>
 #include <filesystem>
 
+/* TODO/Ideas:
+	*Refactor Journal and Helper Functions to live somewhere else.
+	*Qt front-end?
+	*Add Encryption Functions
+	
+	
+*/
+
 
 using namespace std;
 
-const map<int, string> functions{
+const string VIEW_JOURNAL_PROMPT = "Which journal would you like to view? (Enter the integer value)";
+const string DELETE_JOURNAL_PROMPT = "Which journal would you like to delete? (Enter the integer value)";
+
+const map<int, string> functions {
 	{0, "Exit"},
 	{1, "Show today's date."},
 	{2, "Create journal entry."},
@@ -134,7 +145,7 @@ void createJournal() {
 
 }
 
-void viewJournal() {
+filesystem::path selectJournal(const string& prompt) {
 	filesystem::path cw_dir = filesystem::current_path();
 
 	cout << endl;
@@ -147,12 +158,17 @@ void viewJournal() {
 		}
 	}
 
+	if (i == 1) {
+		cout << "No files found." << endl;
+		return filesystem::path();
+	}
+
 	int selection;
-	cout << endl << "Which journal would you like to view? (Enter the integer value)" << endl << endl;
+	cout << endl << prompt << endl << endl;
 	cin >> selection;
 
 	i = 1;
-	filesystem::path filePath;
+	filesystem::path filePath = filesystem::path();
 	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
 		if (entry.path().extension() == ".txt") {
 			if (i == selection) {
@@ -164,30 +180,57 @@ void viewJournal() {
 	}
 
 	if (filePath.empty()) {
-		cout << "File not found. (Please enter a valid integer value)" << endl;
+		cout << endl << "File not found. (Please enter a valid integer value)" << endl;
+		return filePath;
+	}
+
+	return filePath;
+}
+
+void viewJournal() {
+	filesystem::path filePath = selectJournal(VIEW_JOURNAL_PROMPT);
+
+	if (filePath.empty()) {
 		return;
 	}
 
 	string cmd = "notepad " + filePath.string();
 
 	system(cmd.c_str());
-
 }
 
-void selectFunction(int selection) {
+void deleteJournal() {
+	filesystem::path filePath = selectJournal(DELETE_JOURNAL_PROMPT);
+
+	if (filePath.empty()) {
+		return;
+	}
+
+	string cmd = "del \"" + filePath.string() + "\"";
+	cout << cmd << endl;
+
+	system(cmd.c_str());
+}
+
+int selectFunction(int selection) {
 	switch (selection) {
+		case 0:
+			return 0;
 		case 1:
 			printDate();
-			break;
+			return -1;
 		case 2:
 			createJournal();
-			break;
+			return -1;
 		case 3:
 			viewJournal();
-			break;
+			return -1;
+		case 4:
+			deleteJournal();
+			return -1;
 		default:
-			cout << "Invalid function designator or not yet implemented.";
-			break;
+			cout << endl << "Invalid function designator or not yet implemented." << endl;
+			return -1;
 	}
 }
 
@@ -213,9 +256,11 @@ int main()
 
 		if (pickedFunction < 0 || pickedFunction > 4) {
 			cout << "Please provide a valid integer value.";
+			pickedFunction = -1;
+			continue;
 		}
 
-		selectFunction(pickedFunction);
+		pickedFunction = selectFunction(pickedFunction);
 	}
 
 }
