@@ -6,9 +6,10 @@
 using namespace std;
 
 /* TODO/Ideas:
-	*Refactor Journal and Helper Functions to live somewhere else.
 	*Qt front-end?
 	*Add Encryption Functions
+	*Add and think about config options (Default Journal Path, etc..)
+		*Maybe have a simple text file that could be parsed
 	
 	
 */
