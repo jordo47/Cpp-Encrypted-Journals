@@ -2,14 +2,15 @@
 #include <map>
 #include "HelperFunctions.h"
 #include "Journal.h"
+#include "Config.h"
 
 using namespace std;
 
 /* TODO/Ideas:
 	*Qt front-end?
 	*Add Encryption Functions
-	*Add and think about config options (Default Journal Path, etc..)
-		*Maybe have a simple text file that could be parsed
+	*Add config options (basic config parsing exists)
+		*need to introduce logic for using config and setting default config values
 	
 	
 */
@@ -55,6 +56,7 @@ int main()
 	vector<string> acceptableGreetings = { "hi", "hello", "hey" };
 	string greeting;
 	int pickedFunction = -1;
+	map<string, string> configMap = config();
 
 	cout << "Hello,\n\nWelcome to Project Level Up - Sandbox." << endl;
 	cin >> greeting;

@@ -128,11 +128,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="Journal.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="Journal.h" />
   </ItemGroup>

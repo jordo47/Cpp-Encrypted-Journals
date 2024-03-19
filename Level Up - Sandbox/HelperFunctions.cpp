@@ -78,5 +78,4 @@ string getDateStr() {
 	}
 
 	return to_string(static_cast<unsigned>(ymd.day())) + month + to_string(static_cast<int>(ymd.year()));
-
 }
