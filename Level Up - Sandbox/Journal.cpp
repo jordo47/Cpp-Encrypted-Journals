@@ -47,10 +47,6 @@ filesystem::path selectJournal(const string& prompt) {
 
 	int i = 1;
 	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
-		if (entry.path().filename() == "config.txt") {
-			continue;
-		}
-
 		if (entry.path().extension() == ".txt") {
 			cout << i << " - " << entry.path().filename() << endl;
 			i++;

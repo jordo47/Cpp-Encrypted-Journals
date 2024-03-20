@@ -8,9 +8,9 @@ using namespace std;
 
 /* TODO/Ideas:
 	*Qt front-end?
-	*Add Encryption Functions
+	*Add Encryption Functions (classical/post-quantum methods)
 	*Add config options (basic config parsing exists)
-		*need to introduce logic for using config and setting default config values
+		*need to introduce logic for using config
 	
 	
 */
@@ -57,6 +57,10 @@ int main()
 	string greeting;
 	int pickedFunction = -1;
 	map<string, string> configMap = config();
+
+	if (configMap.empty()) {
+		configMap = config();
+	}
 
 	cout << "Hello,\n\nWelcome to Project Level Up - Sandbox." << endl;
 	cin >> greeting;

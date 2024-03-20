@@ -4,18 +4,27 @@
 #include <filesystem>
 #include <iostream>
 
+//DEFAULT CONFIGS:
+const filesystem::path DEFAULT_JOURNAL_PATH = filesystem::current_path();
+
+void writeDefaultConfigs() {
+	ofstream configFile("config.jfig");
+	configFile << "journal-path" << " : " << DEFAULT_JOURNAL_PATH.string() << endl;
+	configFile.close();
+}
+
 map<string, string> config() {
 	int checkflag = 0;
 
 	for (const auto& entry : filesystem::directory_iterator(filesystem::current_path())) {
-		if (entry.path().filename() == "config.txt") {
+		if (entry.path().filename() == "config.jfig") {
 			checkflag = 1;
 		}
 	}
 
 	if (!checkflag) {
-		ofstream config("config.txt");
-		config.close();
+		ofstream configFile("config.jfig");
+		configFile.close();
 	}
 
 	string line = "";
@@ -23,21 +32,28 @@ map<string, string> config() {
 	string value = "";
 	map<string, string> configMap = map<string, string>();
 
-	ifstream config("config.txt");
+	ifstream configFile("config.jfig");
 	
-	while (config.good()) {
-		getline(config, line);
+	while (configFile.good()) {
+		getline(configFile, line);
 
 		if (line.empty()) {
 			continue;
 		}
 
-		istringstream ss(line);
-		ss >> key >> value;
+		pair<string, string> configPair = splitString(line, ":");
+		key = configPair.first;
+		value = configPair.second;
+		trim(key);
+		trim(value);
 		configMap[key] = value;
 	}
 
-	config.close();
+	configFile.close();
+
+	if (configMap.empty()) {
+		writeDefaultConfigs();
+	}
 
 	return configMap;
 }

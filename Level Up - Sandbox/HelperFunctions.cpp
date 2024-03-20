@@ -27,6 +27,19 @@ bool isStringInArray(const string& inStr, const vector<string>& inArr) {
 	return find(inArr.begin(), inArr.end(), inStr) != inArr.end();
 }
 
+pair<string, string> splitString(const string& inStr, const string& delimiter) {
+	size_t pos = 0;
+	pair<string, string> splitStrings;
+
+	while ((pos = inStr.find(delimiter)) != inStr.length()) {
+		splitStrings = {inStr.substr(0, pos), inStr.substr(pos + 1, inStr.length())};
+		break;
+	}
+
+	return splitStrings;
+
+}
+
 string toLowercase(string str) {
 	transform(str.begin(), str.end(), str.begin(), [](unsigned char c) { return tolower(c); });
 	return str;
