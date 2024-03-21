@@ -9,9 +9,6 @@ using namespace std;
 /* TODO/Ideas:
 	*Qt front-end?
 	*Add Encryption Functions (classical/post-quantum methods)
-	*Add config options (basic config parsing exists)
-		*need to introduce logic for using config
-	
 	
 */
 
@@ -21,7 +18,8 @@ const map<int, string> functions {
 	{2, "Create journal entry."},
 	{3, "View journal."},
 	{4, "Delete journal."},
-	//Other functions to consider: Set path for journals, encrypt journals, ...
+	{5, "Set new default path for journals."}
+	//Other functions to consider: encrypt journals, ...
 };
 
 void printFunctions() {
@@ -30,6 +28,9 @@ void printFunctions() {
 }
 
 int selectFunction(int selection) {
+	string workingString = "";
+	pair<string, string> workingPair;
+	string configValue = "";
 	switch (selection) {
 		case 0:
 			return 0;
@@ -44,6 +45,14 @@ int selectFunction(int selection) {
 			return -1;
 		case 4:
 			deleteJournal();
+			return -1;
+		case 5:
+			cout << "Enter your desired path (Ex. C:\\my_journals): " << endl;
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cin >> workingString;
+			workingPair = { "journal-path" , workingString };
+			configValue = getConfigValue("journal-path");
+			setConfig(workingPair);
 			return -1;
 		default:
 			cout << endl << "Invalid function designator or not yet implemented." << endl;
@@ -76,7 +85,7 @@ int main()
 		printFunctions();
 		cin >> pickedFunction;
 
-		if (pickedFunction < 0 || pickedFunction > 4) {
+		if (pickedFunction < 0 || pickedFunction > functions.size()) {
 			cout << "Please provide a valid integer value.";
 			pickedFunction = -1;
 			continue;

@@ -105,3 +105,8 @@ void deleteJournal() {
 
 	system(cmd.c_str());
 }
+
+//TODO
+void moveJournals() {
+
+}

@@ -57,3 +57,55 @@ map<string, string> config() {
 
 	return configMap;
 }
+
+void setConfig(pair<string, string> figPair) {
+	string line = "";
+	string comparisonKey = "";
+	string configKey = figPair.first;
+	string configValue = figPair.second;
+
+	trim(configValue);
+
+	ifstream configFile("config.jfig");
+	ofstream tempFile("temp.txt");
+
+	while (getline(configFile, line)) {
+		pair<string, string> comparisonPair = splitString(line, ":");
+		comparisonKey = comparisonPair.first;
+		trim(comparisonKey);
+		
+		if (comparisonKey != configKey)
+			tempFile << line << endl;
+	}
+
+	tempFile.close();
+	configFile.close();
+	remove("config.jfig");
+	rename("temp.txt", "config.jfig");
+
+	ofstream outFile("config.jfig", ios::app);
+	outFile << configKey << " : " << configValue << endl;
+
+}
+
+string getConfigValue(const string& key) {
+	ifstream configFile("config.jfig");
+	string line = "";
+	string configValue = "";
+	string configKey = "";
+	pair<string, string> returnPair;
+
+
+	while (getline(configFile, line)) {
+		pair<string, string> configPair = splitString(line, ":");
+		configKey = configPair.first;
+		trim(configKey);
+
+		if (configKey == key)
+			configValue = configPair.second;
+	}
+
+	trim(configValue);
+
+	return configValue;
+}
