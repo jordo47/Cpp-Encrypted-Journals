@@ -30,7 +30,7 @@ void printFunctions() {
 int selectFunction(int selection) {
 	string workingString = "";
 	pair<string, string> workingPair;
-	string configValue = "";
+	string lastFigValue = "";
 	switch (selection) {
 		case 0:
 			return 0;
@@ -50,9 +50,11 @@ int selectFunction(int selection) {
 			cout << "Enter your desired path (Ex. C:\\my_journals): " << endl;
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			cin >> workingString;
+			trim(workingString);
 			workingPair = { "journal-path" , workingString };
-			configValue = getConfigValue("journal-path");
+			lastFigValue = getConfigValue("journal-path");
 			setConfig(workingPair);
+			moveJournals(lastFigValue, workingString);
 			return -1;
 		default:
 			cout << endl << "Invalid function designator or not yet implemented." << endl;

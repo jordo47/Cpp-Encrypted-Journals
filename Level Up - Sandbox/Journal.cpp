@@ -1,4 +1,5 @@
 #include "HelperFunctions.h";
+#include "Config.h";
 #include <iostream>;
 #include <filesystem>;
 #include <fstream>;
@@ -7,12 +8,15 @@ const string VIEW_JOURNAL_PROMPT = "Which journal would you like to view? (Enter
 const string DELETE_JOURNAL_PROMPT = "Which journal would you like to delete? (Enter the integer value)";
 
 void createJournal() {
+	string journalPath = getConfigValue("journal-path");
 	string title;
 	string entry;
 	string mood;
 	string sleep;
 	string date;
 	string filename;
+
+	trim(journalPath);
 
 	cout << "\nWhat would you like to name this journal entry?\n";
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -33,7 +37,7 @@ void createJournal() {
 	trim(date);
 	filename = toLowercase(date) + "-" + toLowercase(title) + ".txt";
 
-	ofstream journal(filename);
+	ofstream journal(journalPath + "\\" + filename);
 	journal << title << "\n\n" << date << "\n\nEntry:\n\t" << entry << "\n\nMood:\n\t" << mood << 
 		"\n\nSleep:\n\t" << sleep << endl;
 	journal.close();
@@ -41,12 +45,14 @@ void createJournal() {
 }
 
 filesystem::path selectJournal(const string& prompt) {
-	filesystem::path cw_dir = filesystem::current_path();
+	string pathStr = getConfigValue("journal-path");
+	trim(pathStr);
+	filesystem::path journal_dir = pathStr;
 
 	cout << endl;
 
 	int i = 1;
-	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
+	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
 		if (entry.path().extension() == ".txt") {
 			cout << i << " - " << entry.path().filename() << endl;
 			i++;
@@ -64,7 +70,7 @@ filesystem::path selectJournal(const string& prompt) {
 
 	i = 1;
 	filesystem::path filePath = filesystem::path();
-	for (const auto& entry : filesystem::directory_iterator(cw_dir)) {
+	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
 		if (entry.path().extension() == ".txt") {
 			if (i == selection) {
 				filePath = entry.path();
@@ -107,6 +113,20 @@ void deleteJournal() {
 }
 
 //TODO
-void moveJournals() {
+void moveJournals(const string& fromStr, const string& toStr) {
 
+	if (!filesystem::exists(fromStr)) {
+		cout << "Couldn't find previous journal entries.. Setting journal directory to " << toStr << endl;
+	}
+
+	error_code err = error_code();
+	if (!createDirRecursive(toStr, err)) {
+		cout << "Failed to create new directory for journals. Error: " << err.message() << endl;
+	}
+	
+	for (const auto& entry : filesystem::directory_iterator(fromStr)) {
+		if (entry.path().extension() == ".txt") {
+			rename(entry.path(), toStr + "\\" + entry.path().filename().string());
+		}
+	}
 }

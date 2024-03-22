@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <filesystem>
 
 using namespace std;
 
@@ -25,6 +26,18 @@ void trim(string& s) {
 
 bool isStringInArray(const string& inStr, const vector<string>& inArr) {
 	return find(inArr.begin(), inArr.end(), inStr) != inArr.end();
+}
+
+bool createDirRecursive(const string& dir, error_code& err) {
+	err.clear();
+	if (!filesystem::create_directories(dir, err)) {
+		if (filesystem::exists(dir)) {
+			err.clear();
+			return true;
+		}
+		return false;
+	}
+	return true;
 }
 
 pair<string, string> splitString(const string& inStr, const string& delimiter) {
