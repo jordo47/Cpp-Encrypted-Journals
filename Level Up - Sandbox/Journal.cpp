@@ -6,6 +6,7 @@
 
 const string VIEW_JOURNAL_PROMPT = "Which journal would you like to view? (Enter the integer value)";
 const string DELETE_JOURNAL_PROMPT = "Which journal would you like to delete? (Enter the integer value)";
+const string CONVERT_TYPE_PROMPT = "Which text file would you like to convert to a journal? (Enter the integer value)";
 
 void createJournal() {
 	string journalPath = getConfigValue("journal-path");
@@ -35,7 +36,7 @@ void createJournal() {
 	date = getDateStr();
 	trim(title);
 	trim(date);
-	filename = toLowercase(date) + "-" + toLowercase(title) + ".txt";
+	filename = toLowercase(date) + "-" + toLowercase(title) + ".journal";
 
 	ofstream journal(journalPath + "\\" + filename);
 	journal << title << "\n\n" << date << "\n\nEntry:\n\t" << entry << "\n\nMood:\n\t" << mood << 
@@ -53,7 +54,7 @@ filesystem::path selectJournal(const string& prompt) {
 
 	int i = 1;
 	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
-		if (entry.path().extension() == ".txt") {
+		if (entry.path().extension() == ".journal") {
 			cout << i << " - " << entry.path().filename() << endl;
 			i++;
 		}
@@ -71,7 +72,7 @@ filesystem::path selectJournal(const string& prompt) {
 	i = 1;
 	filesystem::path filePath = filesystem::path();
 	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
-		if (entry.path().extension() == ".txt") {
+		if (entry.path().extension() == ".journal") {
 			if (i == selection) {
 				filePath = entry.path();
 				break;
@@ -112,7 +113,19 @@ void deleteJournal() {
 	system(cmd.c_str());
 }
 
-//TODO
+void convertTxtToJournal() {
+	filesystem::path filePath = selectJournal(CONVERT_TYPE_PROMPT);
+
+	if (filePath.empty()) {
+		return;
+	}
+
+	string journalPath = getConfigValue("journal-path");
+	trim(journalPath);
+
+	rename(filePath, journalPath + "\\" + filePath.stem().string() + ".journal");
+}
+
 void moveJournals(const string& fromStr, const string& toStr) {
 
 	if (!filesystem::exists(fromStr)) {
@@ -125,7 +138,7 @@ void moveJournals(const string& fromStr, const string& toStr) {
 	}
 	
 	for (const auto& entry : filesystem::directory_iterator(fromStr)) {
-		if (entry.path().extension() == ".txt") {
+		if (entry.path().extension() == ".journal") {
 			rename(entry.path(), toStr + "\\" + entry.path().filename().string());
 		}
 	}

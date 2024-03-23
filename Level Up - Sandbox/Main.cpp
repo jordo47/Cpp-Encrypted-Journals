@@ -18,7 +18,8 @@ const map<int, string> functions {
 	{2, "Create journal entry."},
 	{3, "View journal."},
 	{4, "Delete journal."},
-	{5, "Set new default path for journals."}
+	{5, "Set new default path for journals."},
+	//{6, "Convert txt file to journal file."}
 	//Other functions to consider: encrypt journals, ...
 };
 
@@ -56,6 +57,9 @@ int selectFunction(int selection) {
 			setConfig(workingPair);
 			moveJournals(lastFigValue, workingString);
 			return -1;
+	/*	case 6:
+			convertTxtToJournal();
+			return -1; */
 		default:
 			cout << endl << "Invalid function designator or not yet implemented." << endl;
 			return -1;
