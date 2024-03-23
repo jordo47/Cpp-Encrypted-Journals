@@ -45,7 +45,7 @@ void createJournal() {
 
 }
 
-filesystem::path selectJournal(const string& prompt) {
+filesystem::path selectJournalFiles(const string& prompt) {
 	string pathStr = getConfigValue("journal-path");
 	trim(pathStr);
 	filesystem::path journal_dir = pathStr;
@@ -89,8 +89,52 @@ filesystem::path selectJournal(const string& prompt) {
 	return filePath;
 }
 
+filesystem::path selectTextFiles(const string& prompt) {
+	string pathStr = getConfigValue("journal-path");
+	trim(pathStr);
+	filesystem::path journal_dir = pathStr;
+
+	cout << endl;
+
+	int i = 1;
+	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
+		if (entry.path().extension() == ".txt") {
+			cout << i << " - " << entry.path().filename() << endl;
+			i++;
+		}
+	}
+
+	if (i == 1) {
+		cout << "No files found." << endl;
+		return filesystem::path();
+	}
+
+	int selection;
+	cout << endl << prompt << endl << endl;
+	cin >> selection;
+
+	i = 1;
+	filesystem::path filePath = filesystem::path();
+	for (const auto& entry : filesystem::directory_iterator(journal_dir)) {
+		if (entry.path().extension() == ".journal") {
+			if (i == selection) {
+				filePath = entry.path();
+				break;
+			}
+			i++;
+		}
+	}
+
+	if (filePath.empty()) {
+		cout << endl << "File not found. (Please enter a valid integer value)" << endl;
+		return filePath;
+	}
+
+	return filePath;
+}
+
 void viewJournal() {
-	filesystem::path filePath = selectJournal(VIEW_JOURNAL_PROMPT);
+	filesystem::path filePath = selectJournalFiles(VIEW_JOURNAL_PROMPT);
 
 	if (filePath.empty()) {
 		return;
@@ -102,7 +146,7 @@ void viewJournal() {
 }
 
 void deleteJournal() {
-	filesystem::path filePath = selectJournal(DELETE_JOURNAL_PROMPT);
+	filesystem::path filePath = selectJournalFiles(DELETE_JOURNAL_PROMPT);
 
 	if (filePath.empty()) {
 		return;
@@ -114,7 +158,7 @@ void deleteJournal() {
 }
 
 void convertTxtToJournal() {
-	filesystem::path filePath = selectJournal(CONVERT_TYPE_PROMPT);
+	filesystem::path filePath = selectTextFiles(CONVERT_TYPE_PROMPT);
 
 	if (filePath.empty()) {
 		return;
