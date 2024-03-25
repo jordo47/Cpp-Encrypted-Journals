@@ -9,6 +9,14 @@ using namespace std;
 /* TODO/Ideas:
 	*Qt front-end?
 	*Add Encryption Functions (classical/post-quantum methods)
+		* The journals could be verified by using hash algorithms.
+			(This would mean on creation, the app would create a hash value, for the specific journal entry.)
+			(Then when you view the journal, a new hash would be created to validate against the former hash value.)
+		* The current standard for hashing algorithms by NIST, 
+			recommends using SHA-3 for fixed length and SHAKE128/SHAKE256 for "extendable-output" functions (XOFs).
+		* After creating simple validation, I'm thinking there's a need to keep the original hashes safe, 
+			so maybe I will try mutiple some block cipher methods recommended by NIST, then I will research more
+			about what NIST recommends for post-quantum encryption.
 	
 */
 
